@@ -1,0 +1,56 @@
+
+
+aws cloudformation deploy ^
+  --template-file cloudformation/api-gateway.yaml ^
+  --stack-name ideal-train-api-gateway ^
+  --region ap-south-1 ^
+  --endpoint-url=http://localhost:4566
+
+-------------------
+
+Verify stack creation:
+
+aws cloudformation describe-stacks ^
+  --stack-name ideal-train-api-gateway ^
+  --region ap-south-1 ^
+  --endpoint-url=http://localhost:4566
+
+------------------
+
+Retrieve the lambda function ARN for api gateway
+
+aws lambda get-function ^
+  --function-name hello-java21-function ^
+  --region ap-south-1 ^
+  --endpoint-url=http://localhost:4566 ^
+  --query "Configuration.FunctionArn" ^
+  --output text
+
+----------------
+
+Deploy
+
+aws cloudformation deploy ^
+  --template-file cloudformation/api-gateway.yaml ^
+  --stack-name ideal-train-api-gateway ^
+  --parameter-overrides LambdaFunctionArn=arn:aws:lambda:ap-south-1:000000000000:function:hello-java21-function ^
+  --region ap-south-1 ^
+  --endpoint-url=http://localhost:4566
+
+----------------
+
+Get API Gateway ID
+
+aws cloudformation describe-stacks ^
+  --stack-name ideal-train-api-gateway ^
+  --query "Stacks[0].Outputs" ^
+  --region ap-south-1 ^
+  --endpoint-url=http://localhost:4566
+
+RestApiId will be api-id and stage is the one we mentioned (dev) in api-gateway.yaml
+
+http://localhost:4566/restapis/{api-id}/{stage}/_user_request_/{resource-path}
+
+So, the endpoint is as follows: This is GET method.
+
+http://localhost:4566/restapis/fecbkghrgp/dev/_user_request_/hello

@@ -1,0 +1,7 @@
+
+
+
+
+To Check status of LocalStack services enable:
+
+http://localhost:4566/_localstack/health

@@ -1,0 +1,65 @@
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: API Gateway REST API for ideal-train
+Parameters:
+  LambdaFunctionArn:
+    Type: String
+    Description: ARN of the Java Lambda function
+
+Resources:
+
+  HelloRestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: idealtrain-hello-rest-api
+      Description: REST API for Java Lambda integration
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
+  HelloResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref HelloRestApi
+      ParentId: !GetAtt HelloRestApi.RootResourceId
+      PathPart: hello
+
+  HelloGetMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref HelloRestApi
+      ResourceId: !Ref HelloResource
+      HttpMethod: GET
+      AuthorizationType: NONE
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub
+          - arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${LambdaArn}/invocations
+          - LambdaArn: !Ref LambdaFunctionArn
+
+  HelloLambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref LambdaFunctionArn
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${HelloRestApi}/*/GET/hello
+
+  HelloApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - HelloGetMethod
+    Properties:
+      RestApiId: !Ref HelloRestApi
+      StageName: dev
+
+Outputs:
+
+  RestApiId:
+    Description: API Gateway REST API ID
+    Value: !Ref HelloRestApi
+
+  RestApiRootResourceId:
+    Description: API Gateway root resource ID
+    Value: !GetAtt HelloRestApi.RootResourceId

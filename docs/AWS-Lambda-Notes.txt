@@ -1,0 +1,100 @@
+
+
+To ccreate shade jar file which is fat jar required for lambda:
+
+mvn clean package
+
+------------
+
+First create S3 to store the jar file artifact:
+
+aws cloudformation deploy \
+  --template-file cloudformation/lambda-artifacts.yaml \
+  --stack-name ideal-train-lambda-artifacts \
+  --region ap-south-1 \
+  --endpoint-url=http://localhost:4566
+
+aws cloudformation deploy --template-file cloudformation/lambda-artifacts.yaml --stack-name ideal-train-lambda-artifacts --region ap-south-1 --endpoint-url=http://localhost:4566
+
+-------------
+
+Verify S3 Bucket creation:
+
+aws s3 ls --endpoint-url=http://localhost:4566
+
+-------------
+
+To Delete a stack:
+
+aws cloudformation delete-stack \
+  --stack-name manifest-train-lambda-artifacts \
+  --region ap-south-1 \
+  --endpoint-url=http://localhost:4566
+
+aws cloudformation delete-stack --stack-name manifest-train-lambda-artifacts --region ap-south-1 --endpoint-url=http://localhost:4566
+
+--------------
+
+To copy Fat Jar from target folder to S3:
+
+aws s3 cp ../cloudfunctions/hello-lambda/target/hello-lambda-1.0.0.jar s3://ideal-train-lambda-artifacts/hello-lambda/hello-lambda-1.0.0.jar --endpoint-url=http://localhost:4566
+
+--------------
+
+Verify S3 upload:
+
+aws s3 ls s3://ideal-train-lambda-artifacts/ --recursive --endpoint-url=http://localhost:4566
+
+update the bucketname and s3 key in lambda-function.yaml file
+
+---------------
+
+Deploy Lambda:
+
+aws cloudformation deploy ^
+  --template-file cloudformation/lambda-function.yaml ^
+  --stack-name ideal-train-hello-lambda ^
+  --region ap-south-1 ^
+  --capabilities CAPABILITY_NAMED_IAM ^
+  --endpoint-url=http://localhost:4566
+
+aws cloudformation deploy ^
+  --template-file cloudformation/lambda-function.yaml ^
+  --stack-name ideal-train-hello-lambda ^
+  --region ap-south-1 ^
+  --capabilities CAPABILITY_NAMED_IAM ^
+  --endpoint-url=http://localhost:4566
+
+-----------------
+
+Verify stack creation:
+
+aws cloudformation describe-stacks ^
+  --stack-name ideal-train-hello-lambda ^
+  --region ap-south-1 ^
+  --endpoint-url=http://localhost:4566
+
+-----------------
+
+Verify Lambda function creation:
+
+aws lambda list-functions ^
+  --region ap-south-1 ^
+  --endpoint-url=http://localhost:4566
+
+aws lambda get-function ^
+  --function-name hello-java21-function ^
+  --region ap-south-1 ^
+  --endpoint-url=http://localhost:4566
+
+----------------------
+
+Testing AWS Lambda without API Gateway
+
+aws lambda invoke ^
+  --function-name hello-java21-function ^
+  --region ap-south-1 ^
+  --endpoint-url=http://localhost:4566 ^
+  response.json
+
+------------------------

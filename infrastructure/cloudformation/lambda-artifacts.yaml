@@ -1,0 +1,14 @@
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: S3 bucket for Lambda deployment artifacts
+
+Resources:
+  LambdaArtifactsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ideal-train-lambda-artifacts
+
+Outputs:
+  LambdaArtifactsBucketName:
+    Description: Lambda deployment artifacts bucket
+    Value: !Ref LambdaArtifactsBucket

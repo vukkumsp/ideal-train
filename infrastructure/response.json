@@ -1,0 +1,8 @@
+{
+    "statusCode": 200,
+    "headers": {
+        "Content-Type": "application/json"
+    },
+    "body": "{\n    \"message\": \"Hello from Java 21 AWS Lambda!\",\n    \"service\": \"hello-lambda\",\n    \"status\": \"SUCCESS\"\n}\n",
+    "isBase64Encoded": false
+}
