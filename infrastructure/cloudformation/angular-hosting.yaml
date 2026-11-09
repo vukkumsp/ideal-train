@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: S3 bucket for Angular application hosting
+
+Resources:
+  AngularHostingBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: manifest-train-frontend
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        IgnorePublicAcls: false
+        BlockPublicPolicy: false
+        RestrictPublicBuckets: false 
+
+  AngularHostingBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AngularHostingBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: PublicReadAccess
+            Effect: Allow
+            Principal: '*'
+            Action:
+              - s3:GetObject
+            Resource: !Sub '${AngularHostingBucket.Arn}/*'
+
+Outputs:
+  AngularBucketName:
+    Description: S3 bucket name for Angular application
+    Value: !Ref AngularHostingBucket
+
+  AngularWebsiteURL:
+    Description: S3 static website endpoint
+    Value: !GetAtt AngularHostingBucket.WebsiteURL
+
+   

@@ -1,0 +1,45 @@
+Angular S3 setup:
+=================
+
+cloudformation deploy from template cmd:
+
+aws cloudformation deploy \
+  --template-file cloudformation/angular-hosting.yaml \
+  --stack-name manifest-train-frontend-stack \
+  --region ap-south-1 \
+  --endpoint-url=http://localhost:4566
+
+aws cloudformation deploy --template-file cloudformation/angular-hosting.yaml --stack-name manifest-train-frontend-stack --region ap-south-1 --endpoint-url=http://localhost:4566
+
+
+verify S3 creation:
+
+aws cloudformation describe-stacks --stack-name manifest-train-frontend-stack --region ap-south-1 --endpoint-url=http://localhost:4566
+
+Upload Angular ./dist content to S3:
+
+aws s3 sync ../dist/manifest-train/browser/ \
+  s3://manifest-train-frontend/ \
+  --endpoint-url=http://localhost:4566
+
+aws s3 sync ../frontend/manifest-train/dist/manifest-train/browser/ s3://manifest-train-frontend/ --endpoint-url=http://localhost:4566
+
+Verify S3 upload:
+
+aws s3 ls s3://manifest-train-frontend/ \
+  --recursive \
+  --endpoint-url=http://localhost:4566
+
+aws s3 ls s3://manifest-train-frontend/ --recursive --endpoint-url=http://localhost:4566
+
+Generated Angular Url will be obtained from below cmd:
+
+aws cloudformation describe-stacks \
+  --stack-name manifest-train-frontend-stack \
+  --region ap-south-1 \
+  --endpoint-url=http://localhost:4566 \
+  --query "Stacks[0].Outputs"
+
+aws cloudformation describe-stacks --stack-name manifest-train-frontend-stack --region ap-south-1 --endpoint-url=http://localhost:4566 --query "Stacks[0].Outputs"
+
+http://manifest-train-frontend.s3-website.localhost.localstack.cloud:4566
